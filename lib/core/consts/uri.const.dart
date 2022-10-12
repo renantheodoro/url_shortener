@@ -1,0 +1,1 @@
+const String uriPath = 'https://url-shortener-nu.herokuapp.com/api/alias';
