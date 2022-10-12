@@ -1,0 +1,30 @@
+[
+  {
+    "alias": "<url alias>",
+    "_links": {
+      "self": "<original url>",
+      "short": "<short url>"
+    }
+  },
+  {
+    "alias": "<url alias>",
+    "_links": {
+      "self": "<original url>",
+      "short": "<short url>"
+    }
+  },
+  {
+    "alias": "<url alias>",
+    "_links": {
+      "self": "<original url>",
+      "short": "<short url>"
+    }
+  },
+  {
+    "alias": "<url alias>",
+    "_links": {
+      "self": "<original url>",
+      "short": "<short url>"
+    }
+  }
+]
