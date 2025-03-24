@@ -16,10 +16,10 @@ jobs:
       - name: Install Flutter manually
         run: |
           git clone https://github.com/flutter/flutter.git /opt/flutter
-          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
+          echo "/opt/flutter/bin" >> $GITHUB_PATH  # Modificado para garantir a persistência no PATH
           export PATH="$PATH:/opt/flutter/bin"
-          echo "$PATH" # Adiciona o PATH para depuração
-          flutter doctor # Certifique-se de que o flutter está instalado corretamente
+          flutter --version  # Verifica a versão do Flutter para garantir que foi instalado corretamente
+          flutter doctor  # Certifique-se de que o flutter está instalado corretamente
 
       - name: Install dependencies
         run: flutter pub get
