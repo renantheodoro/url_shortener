@@ -7,16 +7,19 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.10.0"
+      - name: Install Flutter manually
+        run: |
+          git clone https://github.com/flutter/flutter.git /opt/flutter
+          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
+          export PATH="$PATH:/opt/flutter/bin"
+          echo "$PATH" # Adiciona o PATH para depuração
+          flutter doctor # Certifique-se de que o flutter está instalado corretamente
 
       - name: Install dependencies
         run: flutter pub get
