@@ -29,17 +29,37 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png" />
 
-    <title>url_shortener</title>
+    <title>Url Shortener by Renan Theodoro</title>
     <link rel="manifest" href="manifest.json" />
 
     <script>
       // The value below is injected by flutter build, do not touch.
-      var serviceWorkerVersion = ""2858754898"";
+      var serviceWorkerVersion = "2413901279";
     </script>
     <!-- This script adds the flutter initialization JS code -->
     <script src="flutter.js" defer></script>
   </head>
   <body>
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCdKk1M5WYfzuofn-tY5E3KtalWSSttBxc",
+        authDomain: "url-shortener-app-f8e57.firebaseapp.com",
+        projectId: "url-shortener-app-f8e57",
+        storageBucket: "url-shortener-app-f8e57.firebasestorage.app",
+        messagingSenderId: "516213683894",
+        appId: "1:516213683894:web:f3ee7c050b8daa46885817",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+    </script>
+
     <script>
       window.addEventListener("load", function (ev) {
         // Download main.dart.js
