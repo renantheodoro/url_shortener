@@ -18,7 +18,8 @@ jobs:
           git clone https://github.com/flutter/flutter.git /opt/flutter
           echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
           export PATH="$PATH:/opt/flutter/bin"
-          flutter doctor
+          echo "$PATH" # Adiciona o PATH para depuração
+          flutter doctor # Certifique-se de que o flutter está instalado corretamente
 
       - name: Install dependencies
         run: flutter pub get
