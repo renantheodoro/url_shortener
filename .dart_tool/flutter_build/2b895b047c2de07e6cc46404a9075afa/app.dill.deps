@@ -1040,7 +1040,6 @@ file:///Users/renantheodoro/Development/url_shortener/.dart_tool/package_config.
 file:///Users/renantheodoro/Development/url_shortener/lib/core/consts/app_title.const.dart
 file:///Users/renantheodoro/Development/url_shortener/lib/core/consts/cached_url_key.const.dart
 file:///Users/renantheodoro/Development/url_shortener/lib/core/consts/error_input_text.const.dart
-file:///Users/renantheodoro/Development/url_shortener/lib/core/consts/uri.const.dart
 file:///Users/renantheodoro/Development/url_shortener/lib/core/error/exception.dart
 file:///Users/renantheodoro/Development/url_shortener/lib/core/error/failures.dart
 file:///Users/renantheodoro/Development/url_shortener/lib/core/services/service_response.dart
