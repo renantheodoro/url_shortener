@@ -12,15 +12,17 @@ class UrlList extends StatefulWidget {
 
 class _UrlListState extends State<UrlList> {
   @override
-  Widget build(BuildContext context) => Expanded(
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: widget.urlList?.length,
-          itemBuilder: (context, index) => Padding(
-              padding: const EdgeInsets.only(bottom: 12.0),
-              child: Text(
-                widget.urlList![index].urlLinks!.short ?? '',
-              )),
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: widget.urlList?.length ?? 0,
+      itemBuilder: (context, index) => Padding(
+        padding: const EdgeInsets.only(bottom: 12.0),
+        child: Text(
+          widget.urlList![index].urlLinks!.short ?? '',
         ),
-      );
+      ),
+    );
+  }
 }

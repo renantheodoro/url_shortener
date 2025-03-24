@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:url_shortener/core/platform/network_info.dart';
 import 'package:url_shortener/data/datasource/local/url_local_data_source.dart';
 import 'package:url_shortener/data/repositories/url_respository.dart';
 import 'package:url_shortener/domain/protocols/get_full_urls_protocol.dart';
@@ -47,14 +46,14 @@ GetFullUrlListUseCase getGetFullUrlsUseCase() =>
 
 // SHORTEN
 ShortenUrlProtocol getShortenUrlProtocol() => UrlRepository(
-    localDataSource: UrlLocalDataSource(),
-    remoteDataSource: UrlRemoteDataSource(getClient()),
-    networkInfo: NetworkInfo());
+      localDataSource: UrlLocalDataSource(),
+      remoteDataSource: UrlRemoteDataSource(getClient()),
+    );
 
 GetFullUrlsProtocol getFullUrlsProtocol() => UrlRepository(
-    localDataSource: UrlLocalDataSource(),
-    remoteDataSource: UrlRemoteDataSource(getClient()),
-    networkInfo: NetworkInfo());
+      localDataSource: UrlLocalDataSource(),
+      remoteDataSource: UrlRemoteDataSource(getClient()),
+    );
 
 // CLIENT
 http.Client getClient() => http.Client();

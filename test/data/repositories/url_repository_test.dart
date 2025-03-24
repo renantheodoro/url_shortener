@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:url_shortener/core/error/exception.dart';
 import 'package:url_shortener/core/error/failures.dart';
-import 'package:url_shortener/core/platform/network_info.dart';
 import 'package:url_shortener/core/services/service_response.dart';
 import 'package:url_shortener/data/datasource/local/url_local_data_source.dart';
 import 'package:url_shortener/data/datasource/remote/url_remote_data_source.dart';
@@ -17,55 +16,31 @@ class MockUrlLocalDataSource extends Mock implements UrlLocalDataSource {}
 
 class MockUrlRemoteDateSource extends Mock implements UrlRemoteDataSource {}
 
-class MockNetWorkInfo extends Mock implements NetworkInfo {}
-
 void main() {
   late MockUrlLocalDataSource mockUrlLocalDataSource;
   late MockUrlRemoteDateSource mockUrlRemoteDateSource;
-  late MockNetWorkInfo mockNetWorkInfo;
   late UrlRepository urlRepository;
 
   late String originalUrl;
-
   late UrlModel urlModel;
 
   setUp(() {
     mockUrlLocalDataSource = MockUrlLocalDataSource();
     mockUrlRemoteDateSource = MockUrlRemoteDateSource();
-    mockNetWorkInfo = MockNetWorkInfo();
 
     urlRepository = UrlRepository(
-        localDataSource: mockUrlLocalDataSource,
-        remoteDataSource: mockUrlRemoteDateSource,
-        networkInfo: mockNetWorkInfo);
+      localDataSource: mockUrlLocalDataSource,
+      remoteDataSource: mockUrlRemoteDateSource,
+    );
 
     originalUrl = '<original url>';
-
-    urlModel =  UrlModelAdapter.fromJson(fixture('url.json'));
-  });
-
-  test('should verify if device has connection with the internet', () async {
-    when(
-      () => mockNetWorkInfo.isConnected,
-    ).thenAnswer((_) => Future.value(true));
-
-    when(() => mockUrlRemoteDateSource.shorten(originalUrl))
-        .thenAnswer((_) async => await Future.value(urlModel));
-
-    when(() => mockUrlLocalDataSource.cacheUrl(urlModel))
-        .thenAnswer((_) => Future.value());
-
-    urlRepository.shorten(originalUrl);
-
-    verify(() => mockNetWorkInfo.isConnected).called(1);
+    urlModel = UrlModelAdapter.fromJson(fixture('url.json'));
   });
 
   group('shorten method tests', () {
     group('if the device is connected to the internet', () {
       setUp(() {
-        when(() => mockNetWorkInfo.isConnected)
-            .thenAnswer((_) => Future.value(true));
-
+        // Simulando que sempre há uma conexão
         when(() => mockUrlRemoteDateSource.shorten(originalUrl))
             .thenAnswer((_) async => await Future.value(urlModel));
 
@@ -120,21 +95,27 @@ void main() {
 
     group('if the device is not connected to the internet', () {
       setUp(() {
-        when(() => mockNetWorkInfo.isConnected)
-            .thenAnswer((_) => Future.value(false));
+        // Simulando que a rede não está conectada
+        when(() => mockUrlRemoteDateSource.shorten(originalUrl))
+            .thenThrow(ServerException());
       });
 
-      test('should return a connection failure when calls shorten method',
+      test('should return a server failure when the call to remote data fails',
           () async {
+        // Simulando a exceção de falha de conexão
+        when(() => mockUrlRemoteDateSource.shorten(originalUrl))
+            .thenThrow(ServerException());
+
         final ServiceResponse<Failure, dynamic> result =
             await urlRepository.shorten(originalUrl);
 
-        verify(() => mockNetWorkInfo.isConnected).called(1);
-        verifyNoMoreInteractions(mockUrlRemoteDateSource);
-        verifyNoMoreInteractions(mockUrlLocalDataSource);
+        // Verifica se não houve interações adicionais após a falha
+        verify(() => mockUrlRemoteDateSource.shorten(originalUrl)).called(1);
+        verifyZeroInteractions(mockUrlLocalDataSource);
 
+        // Verifica se a falha é uma ServerFailure
         expect(result.failure,
-            allOf([equals(isNotNull), equals(isA<ConnectionFailure>())]));
+            allOf([equals(isNotNull), equals(isA<ServerFailure>())]));
       });
     });
   });
@@ -146,7 +127,7 @@ void main() {
       urlsListModels = UrlModelsAdapter.fromJson(fixture('url_list.json'));
     });
 
-    test('should retun a list of cached url data', () async {
+    test('should return a list of cached url data', () async {
       when(() => mockUrlLocalDataSource.getCachedList())
           .thenAnswer((_) async => await Future.value(urlsListModels));
 

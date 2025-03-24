@@ -79,11 +79,11 @@ class _HomeViewBodyState extends State<HomeViewBody> {
                   children: <Widget>[
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
-                      child: Column(
+                      child: const Column(
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text(
                             'Recently shortened',
                             style: TextStyle(
@@ -180,20 +180,18 @@ class _HomeViewBodyState extends State<HomeViewBody> {
         ],
       );
 
-  Widget _buildShortenedUrlList() => Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            const SizedBox(height: 16.0),
-            const TextBold(
-              text: 'Last shortened URLs',
-            ),
-            const SizedBox(height: 16.0),
-            UrlList(
-              urlList: widget.model.currentUrlList,
-            ),
-          ],
-        ),
+  Widget _buildShortenedUrlList() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          const SizedBox(height: 16.0),
+          const TextBold(
+            text: 'Last shortened URLs',
+          ),
+          const SizedBox(height: 16.0),
+          UrlList(
+            urlList: widget.model.currentUrlList,
+          ),
+        ],
       );
 }

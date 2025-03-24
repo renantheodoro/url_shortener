@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
-import 'package:url_shortener/core/consts/uri.const.dart';
+import 'package:url_shortener/core/error/exception.dart';
 import 'package:url_shortener/data/datasource/remote/url_remote_data_source.dart';
 import 'package:url_shortener/data/models/url_model.dart';
 
@@ -25,38 +25,40 @@ void main() {
     urlRemoteDataSource = UrlRemoteDataSource(mockClient);
 
     originalUrl = '<original url>';
-
-    url = Uri.parse(uriPath);
+    url = Uri.parse('http://localhost:5001/api/shorten');
     headers = {'Content-Type': 'application/json'};
     body = jsonEncode({"url": originalUrl});
   });
 
-  test('should short an url and return a url model', () async {
-    when(() => mockClient.post(url, headers: headers, body: body)).thenAnswer(
-        (_) async =>
-            await Future.value(http.Response(fixture('url.json'), 200)));
+  group('shorten URL tests', () {
+    test('should short a url and return a url model', () async {
+      // Arrange: mock a successful response with status code 200
+      when(() => mockClient.post(url, headers: headers, body: body)).thenAnswer(
+        (_) async => http.Response(fixture('url.json'), 200),
+      );
 
-    final UrlModel result = await urlRemoteDataSource.shorten(originalUrl);
+      // Act: call the method under test
+      final UrlModel result = await urlRemoteDataSource.shorten(originalUrl);
 
-    expect(result, allOf([equals(isNotNull), equals(isA<UrlModel>())]));
-    expect(result.alias,
-        allOf([equals(isNotNull), equals(isA<String>()), equals(isNot(''))]));
-    expect(result.urlLinks,
-        allOf([equals(isNotNull), equals(isA<UrlLinksModel>())]));
-    expect(result.urlLinks?.self,
-        allOf([equals(isNotNull), equals(isA<String>()), equals(originalUrl)]));
-    expect(result.urlLinks?.short,
-        allOf([equals(isNotNull), equals(isA<String>()), equals(isNot(''))]));
-  });
+      // Assert: check that the result is a valid UrlModel
+      expect(result, isA<UrlModel>());
+      expect(result.alias, isNotEmpty);
+      expect(result.urlLinks, isA<UrlLinksModel>());
+      expect(result.urlLinks?.self, originalUrl);
+      expect(result.urlLinks?.short, isNotEmpty);
+    });
 
-  test('should throws a server exception if response is different than 200',
-      () async {
-    when(() => mockClient.post(url, headers: headers, body: body)).thenAnswer(
-        (_) async =>
-            await Future.value(http.Response(fixture('url.json'), 404)));
+    test('should throw a server exception if response is not 200', () async {
+      // Arrange: mock a failed response with status code 404
+      when(() => mockClient.post(url, headers: headers, body: body)).thenAnswer(
+        (_) async => http.Response(fixture('url.json'), 404),
+      );
 
-    expect(() async => await urlRemoteDataSource.shorten(originalUrl),
-        throwsException);
-
+      // Act & Assert: ensure a ServerException is thrown for non-200 responses
+      expect(
+        () async => await urlRemoteDataSource.shorten(originalUrl),
+        throwsA(isA<ServerException>()),
+      );
+    });
   });
 }
