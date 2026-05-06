@@ -6,7 +6,6 @@ import 'package:url_shortener/domain/entities/url_entity.dart';
 import 'package:url_shortener/domain/usecases/get_recently_urls_use_case.dart';
 import 'package:url_shortener/domain/usecases/shorten_url_use_case.dart';
 
-
 class HomeViewModel extends ChangeNotifier {
   HomeViewModel(
       {required this.shortenUrlUseCase,
@@ -33,6 +32,8 @@ class HomeViewModel extends ChangeNotifier {
     setBusy(true);
     final ServiceResponse<Failure, UrlEntity> data =
         await shortenUrlUseCase(UrlParams(currentUrl));
+
+    print('--data ${data.response}');
 
     if (data.response != null) {
       _currentUrl = data.response;

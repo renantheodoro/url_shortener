@@ -36,7 +36,7 @@ class _CompleteListViewState extends State<CompleteListView> {
                     children: [
                       const SizedBox(height: 16.0),
                       const TextBold(
-                        text: 'Recently shortened URLs',
+                        text: 'All shortened URLs',
                       ),
                       const SizedBox(height: 16.0),
                       if (model.fullUrlList != null &&

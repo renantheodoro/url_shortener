@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_shortener/core/consts/app_title.const.dart';
 import 'package:url_shortener/presentation/components/button_submit.dart';
 import 'package:url_shortener/presentation/components/text.dart';
@@ -29,7 +30,27 @@ class _HomeViewState<T extends ChangeNotifier> extends State<HomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(appTitle),
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.purple,
+        elevation: 4,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.purple.shade800, Colors.purple.shade500],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        title: const Text(
+          appTitle,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20.0,
+            color: Colors.white,
+            letterSpacing: 1.2,
+          ),
+        ),
       ),
       body: Consumer<HomeViewModel>(builder: (context, model, child) {
         return model.busy
@@ -59,78 +80,65 @@ class HomeViewBody extends StatefulWidget {
 class _HomeViewBodyState extends State<HomeViewBody> {
   final _formKey = GlobalKey<FormState>();
 
-  Widget _buildNavigatorButton() => InkWell(
+  void _copyToClipboard(String text) {
+    if (text.isNotEmpty) {
+      Clipboard.setData(ClipboardData(text: text));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Link copiado!')),
+      );
+    }
+  }
+
+  Widget _buildNavigatorButton() => OutlinedButton(
         key: const Key('navigatorButton'),
-        onTap: () {
+        onPressed: () {
           Navigator.of(context).pushNamed(RoutePaths.completeList);
         },
-        child: Container(
-          decoration: const BoxDecoration(
-              border:
-                  Border(top: BorderSide(color: Colors.black12, width: 1.0))),
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              Expanded(
-                flex: 10,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: const Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Recently shortened',
-                            style: TextStyle(
-                                fontSize: 14.0,
-                                color: Colors.purple,
-                                fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              const Expanded(
-                child: Center(
-                    child: Icon(
-                  Icons.arrow_forward_outlined,
-                  color: Colors.purple,
-                )),
-              ),
-            ],
-          ),
-        ),
-      );
-
-  @override
-  Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildForm(),
-                const SizedBox(height: 16.0),
-                if (widget.model.currentUrl != null)
-                  _buildCurrentShortenedInfo(),
-                if (widget.model.currentUrlList!.isNotEmpty)
-                  _buildShortenedUrlList(),
-              ],
+        style: OutlinedButton.styleFrom(
+            side: const BorderSide(color: Colors.purple, width: 1),
+            shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(4), // Arredondamento das bordas
             ),
-          ),
-          _buildNavigatorButton()
-        ],
+            padding:
+                const EdgeInsets.symmetric(vertical: 18.0, horizontal: 12.0)),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 10,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: const Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'View all shortened links',
+                          style: TextStyle(
+                              fontSize: 14.0,
+                              color: Colors.purple,
+                              fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+            const Expanded(
+              child: Center(
+                  child: Icon(
+                Icons.arrow_forward_outlined,
+                color: Colors.purple,
+              )),
+            ),
+          ],
+        ),
       );
 
   Widget _buildForm() => Form(
@@ -142,8 +150,11 @@ class _HomeViewBodyState extends State<HomeViewBody> {
               child: InputText(
                 key: const Key('inputKey'),
                 controller: widget.inputController,
-                label: 'URL',
+                label: 'Enter the URL that you want to short',
               ),
+            ),
+            const SizedBox(
+              width: 12.0,
             ),
             ButtonSubmit(callback: () async {
               if (_formKey.currentState!.validate()) {
@@ -163,8 +174,33 @@ class _HomeViewBodyState extends State<HomeViewBody> {
           const TextBold(
             text: 'Original:',
           ),
-          Text(
-            '''${widget.model.currentUrl?.urlLinks?.self}''',
+          const SizedBox(
+            height: 4.0,
+          ),
+          Container(
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.model.currentUrl?.originalUrl ?? '',
+                    style: const TextStyle(fontSize: 16.0, color: Colors.black),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.copy, color: Colors.purple),
+                  onPressed: () {
+                    _copyToClipboard(
+                        widget.model.currentUrl?.originalUrl ?? '');
+                  },
+                ),
+              ],
+            ),
           ),
           const SizedBox(
             height: 12.0,
@@ -172,8 +208,32 @@ class _HomeViewBodyState extends State<HomeViewBody> {
           const TextBold(
             text: 'Shortened:',
           ),
-          Text(
-            '''${widget.model.currentUrl?.urlLinks?.short}''',
+          const SizedBox(
+            height: 4.0,
+          ),
+          Container(
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.model.currentUrl?.shortUrl ?? '',
+                    style: const TextStyle(fontSize: 16.0, color: Colors.black),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.copy, color: Colors.purple),
+                  onPressed: () {
+                    _copyToClipboard(widget.model.currentUrl?.shortUrl ?? '');
+                  },
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 16.0),
           const Divider(color: Colors.grey),
@@ -186,11 +246,38 @@ class _HomeViewBodyState extends State<HomeViewBody> {
         children: [
           const SizedBox(height: 16.0),
           const TextBold(
-            text: 'Last shortened URLs',
+            text: 'Recently shortened',
           ),
           const SizedBox(height: 16.0),
           UrlList(
             urlList: widget.model.currentUrlList,
+          ),
+        ],
+      );
+
+  @override
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildForm(),
+                const SizedBox(height: 16.0),
+                if (widget.model.currentUrl != null)
+                  _buildCurrentShortenedInfo(),
+                if (widget.model.currentUrlList!.isNotEmpty)
+                  _buildShortenedUrlList(),
+                const SizedBox(
+                  height: 12.0,
+                ),
+                _buildNavigatorButton()
+              ],
+            ),
           ),
         ],
       );

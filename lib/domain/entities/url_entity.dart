@@ -1,18 +1,16 @@
 import 'package:equatable/equatable.dart';
 
 class UrlEntity extends Equatable {
-  const UrlEntity({this.alias, this.urlLinks});
+  const UrlEntity({
+    this.originalUrl,
+    this.shortCode,
+    this.shortUrl,
+  });
 
-  final String? alias;
-  final UrlLinksEntity? urlLinks;
+  final String? originalUrl;
+  final String? shortCode;
+  final String? shortUrl;
 
   @override
-  List<Object?> get props => [alias, urlLinks];
-}
-
-class UrlLinksEntity {
-  UrlLinksEntity({this.self, this.short});
-
-  final String? self;
-  final String? short;
+  List<Object?> get props => [originalUrl, shortCode, shortUrl];
 }

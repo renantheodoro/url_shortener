@@ -15,9 +15,10 @@ class UrlRemoteDataSource implements UrlRemoteDataSourceInterface {
 
   @override
   Future<UrlModel> shorten(String originalUrl) async {
-    final Uri url = Uri.parse('http://localhost:5001/api/shorten');
+    final Uri url = Uri.parse(
+        'https://us-central1-url-shortener-api-c5488.cloudfunctions.net/app/api/shorten');
     final Map<String, String> headers = {'Content-Type': 'application/json'};
-    final String body = jsonEncode({"url": originalUrl}); 
+    final String body = jsonEncode({"url": originalUrl});
 
     final http.Response response =
         await client.post(url, headers: headers, body: body);
@@ -25,8 +26,6 @@ class UrlRemoteDataSource implements UrlRemoteDataSourceInterface {
     if (response.statusCode != 200) {
       throw ServerException();
     }
-
-    // Mapeando a resposta para o modelo adequado
     return UrlModel.toModel(jsonDecode(response.body));
   }
 }
