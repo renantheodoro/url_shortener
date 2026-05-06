@@ -1,1 +1,1 @@
-const String appTitle = 'URL Shortener';
+const String appTitle = 'URL SHORTENER';

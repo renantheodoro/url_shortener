@@ -6,11 +6,17 @@ class TextBold extends StatelessWidget {
   final String? text;
 
   @override
-  Widget build(BuildContext context) => Text(
-        text ?? '',
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-        ),
-        textAlign: TextAlign.left,
-      );
+  Widget build(BuildContext context) {
+    return Text(
+      text ?? '',
+      style: TextStyle(
+        fontWeight: FontWeight.w700,
+        fontSize: 18.0,
+        color: Colors.purple.shade700,
+        letterSpacing: 1.2,
+        fontFamily: 'Roboto',
+      ),
+      textAlign: TextAlign.left,
+    );
+  }
 }
